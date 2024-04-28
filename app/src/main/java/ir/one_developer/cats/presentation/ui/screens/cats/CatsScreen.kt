@@ -1,6 +1,5 @@
 package ir.one_developer.cats.presentation.ui.screens.cats
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
@@ -41,9 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,7 +57,9 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CatsScreenContainer(
-    viewModel: CatsViewModel
+    viewModel: CatsViewModel,
+    modifier: Modifier = Modifier,
+    navigateToBookmarkScreen: () -> Unit
 ) {
     val items = viewModel.items.collectAsLazyPagingItems()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -73,9 +71,9 @@ fun CatsScreenContainer(
     CatsScreen(
         items = items,
         state = uiState,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
+        modifier = modifier,
+        onBookmarkClick = viewModel::onBookmarkClick,
+        onShowBookmarkListClick = navigateToBookmarkScreen
     )
 }
 
@@ -83,12 +81,13 @@ fun CatsScreenContainer(
 @Composable
 private fun CatsScreen(
     state: CatsUiState,
+    items: LazyPagingItems<Cat>,
     modifier: Modifier = Modifier,
-    items: LazyPagingItems<Cat>
+    onBookmarkClick: (Cat) -> Unit = {},
+    onShowBookmarkListClick: () -> Unit = {},
 ) = Box(
     modifier = modifier
 ) {
-    val context = LocalContext.current
     val lazyGridState = rememberLazyGridState()
     var selectedCat by remember {
         mutableStateOf<Cat?>(null)
@@ -106,7 +105,7 @@ private fun CatsScreen(
             },
             actions = {
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = onShowBookmarkListClick,
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.onBackground,
@@ -245,12 +244,7 @@ private fun CatsScreen(
         selectedCat?.let {
             CatDetailScreen(
                 item = it,
-                modifier = Modifier
-                    .background(color = Color.Black.copy(alpha = .3F))
-                    .padding(vertical = 56.dp)
-                    .padding(horizontal = 16.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .fillMaxSize()
+                onBookmarkClick = onBookmarkClick
             )
         }
     }
@@ -269,7 +263,8 @@ private fun CatsPreview() = CatsTheme {
     CatsScreen(
         state = CatsUiState(loading = false),
         items = flowOf(PagingData.from(createCats())).collectAsLazyPagingItems(),
-        modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.background)
+        modifier = Modifier.background(
+            color = MaterialTheme.colorScheme.background
+        )
     )
 }

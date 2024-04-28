@@ -13,21 +13,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(
-
-) : ViewModel() {
+class SplashViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState: MutableStateFlow<SplashUiState> = MutableStateFlow(SplashUiState())
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            delay(2000)
+            delay(100)
             _uiState.update {
-                it.copy(
-                    loading = false,
-                    nextScreen = Screen.CatsScreen
-                )
+                it.copy(nextScreen = Screen.CatsScreen)
             }
         }
     }

@@ -8,4 +8,6 @@ sealed class Screen(
 
     data object CatsScreen : Screen(route = "cats.screen")
 
+    data object BookmarkScreen : Screen(route = "bookmark.screen")
+
 }

@@ -4,10 +4,12 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.map
 import ir.one_developer.cats.data.model.local.toCat
 import ir.one_developer.cats.data.source.CatDataSource
 import ir.one_developer.cats.domain.model.Cat
+import ir.one_developer.cats.domain.model.toCatEntity
 import ir.one_developer.cats.domain.repository.CatRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,6 +20,7 @@ class CatRepositoryImpl(
     private val local: CatDataSource.Local,
     private val remoteMediator: CatRemoteMediator
 ) : CatRepository {
+
     @OptIn(ExperimentalPagingApi::class)
     override fun getCats(): Flow<PagingData<Cat>> {
         return Pager(
@@ -32,5 +35,15 @@ class CatRepositoryImpl(
         ).flow.map { pagingData ->
             pagingData.map { it.toCat() }
         }
+    }
+
+    override fun getBookmarkedCats(): Flow<List<Cat>> {
+        return local.bookmarkedCats().map {
+            it.map { it.toCat() }
+        }
+    }
+
+    override suspend fun bookmarkCat(cat: Cat) {
+        local.bookmarkCat(cat.toCatEntity())
     }
 }

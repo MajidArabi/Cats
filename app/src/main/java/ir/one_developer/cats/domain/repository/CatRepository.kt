@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface CatRepository {
 
-    fun getCats() : Flow<PagingData<Cat>>
+    fun getCats(): Flow<PagingData<Cat>>
+
+    fun getBookmarkedCats(): Flow<List<Cat>>
+
+    suspend fun bookmarkCat(cat: Cat)
 
 }

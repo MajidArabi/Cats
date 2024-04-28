@@ -9,6 +9,7 @@ import ir.one_developer.cats.data.model.local.CacheTimeoutEntity
 import ir.one_developer.cats.data.model.local.CatEntity
 import ir.one_developer.cats.data.model.local.CatRemoteKeyEntity
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class CatLocalDataSource(
@@ -19,6 +20,14 @@ class CatLocalDataSource(
 ) : CatDataSource.Local {
 
     override fun cats(): PagingSource<Int, CatEntity> = catDao.cats()
+
+    override fun bookmarkedCats(): Flow<List<CatEntity>> = catDao.bookmarkedCats()
+
+    override suspend fun bookmarkCat(
+        entity: CatEntity
+    ) = withContext(dispatcher) {
+        catDao.bookmarkCat(entity)
+    }
 
     override suspend fun save(
         entities: List<CatEntity>

@@ -8,17 +8,20 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.one_developer.cats.domain.model.Cat
+import ir.one_developer.cats.domain.usecase.BookmarkCatUseCase
 import ir.one_developer.cats.domain.usecase.GetCatsUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CatsViewModel @Inject constructor(
-    getCatsUseCase: GetCatsUseCase
+    getCatsUseCase: GetCatsUseCase,
+    private val bookmarkCatUseCase: BookmarkCatUseCase,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<CatsUiState> = MutableStateFlow(CatsUiState())
@@ -48,5 +51,9 @@ class CatsViewModel @Inject constructor(
                 paginationLoading = paginationLoading
             )
         }
+    }
+
+    fun onBookmarkClick(cat: Cat) {
+        viewModelScope.launch { bookmarkCatUseCase(cat) }
     }
 }

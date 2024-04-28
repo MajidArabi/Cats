@@ -9,10 +9,12 @@ data class CatEntity(
     @PrimaryKey(autoGenerate = false)
     val id: String,
     val imageUrl: String?,
-    val page : Int? = null
+    val page : Int? = null,
+    val bookmarked : Boolean = false
 )
 
 fun CatEntity.toCat() = Cat(
     id = this.id,
+    bookmarked = this.bookmarked,
     imageUrl = this.imageUrl.orEmpty()
 )
